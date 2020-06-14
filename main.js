@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 const ime = chrome.input.ime;
+const INVALID_INPUT_CONTEXT = -1;
 
-// dunno what this is lol
-let context_id = -1;
+/**
+ * ID of an input target. It becomes invalid on a blur event.
+ */
+let contextID = INVALID_INPUT_CONTEXT;
 
 /**
  * Occurs when a text input area is focused.
@@ -13,16 +16,14 @@ let context_id = -1;
  * All we need to do is set the context.
  */
 ime.onFocus.addListener((context) => {
-  console.log(`onFocus: ${context.contextID}`);
-  context_id = context.contextID;
+  contextID = context.contextID;
 });
 
 /**
  * When unfcoused, unset the context.
  */
 ime.onBlur.addListener((contextID) => {
-  console.log('onBlur:' + contextID);
-  context_id = -1;
+  contextID = INVALID_INPUT_CONTEXT;
 });
 
 /**
@@ -47,11 +48,9 @@ ime.onDeactivated.addListener(function(engineID) {
  * This can change text based on the key pressed.
  */
 ime.onKeyEvent.addListener((engineID, keyData) => {
-  console.log(`onKeyEvent: ${keyData.key} context: {context_id}`);
-
   if (keyData.type == "keydown" && keyData.key.match(/^[eioa]$/)) {
     chrome.input.ime.commitText({
-      "contextID": context_id,
+      "contextID": contextID,
       "text": {
         "e": "\u1401",
         "i": "\u1403",
