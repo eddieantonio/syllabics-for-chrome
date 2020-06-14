@@ -8,10 +8,10 @@
     },
     "input_components": [
         {
-            "name": "Syllabics IME",
+            "name": "ᓀᐦᐃᔭᐍᐏᐣ ᒐᑭᐯᐦᐃᑲᓇ (Syllabics) keyboard",
             "type": "ime",
-            "id": "syllabics",
-            "description": "Type nêhiyawêwin syllabics",
+            "id": "crk_syllabics",
+            "description": "Type in Cree syllabics",
             "language": "en-CA",
             "layouts": ["us::eng"]
         }

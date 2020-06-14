@@ -4,9 +4,12 @@
 // found in the LICENSE file.
 
 const { ime } = chrome.input;
+
 const INVALID_INPUT_CONTEXT = -1;
+const SYLLABICS_FULL_STOP = '\u166E'; // ᙮ U+166E CANADIAN SYLLABICS FULL STOP
+
 // Match Cree text:
-const wordPattern = /^(?:[ptkcsmnhwylreioa]|-|[.])+$/i;
+const wordPattern = /^(?:[ptkcsmnhwylreioa]|-)+$/i;
 
 // /////////////////////////////// Globals //////////////////////////////// //
 let input = '';
@@ -39,7 +42,7 @@ ime.onKeyEvent.addListener((engineID, keyData) => {
   if (wordPattern.test(input + keyData.key)) {
     // looks like syllabic input. Add it!
     input += keyData.key;
-    chrome.input.ime.setComposition({
+    ime.setComposition({
       contextID,
       text: sro2syllabics(input),
       cursor: input.length,
@@ -48,25 +51,30 @@ ime.onKeyEvent.addListener((engineID, keyData) => {
     return true;
   }
 
-  if (keyData.key === ' ') {
-    // Pressed space. Accept the syllabics input!
+  if (input && keyData.key === '.') {
+    // special case for full stop -- only occur AFTER syllabics.
+    input = sro2syllabics(input) + SYLLABICS_FULL_STOP;
 
-    ime.commitText({ contextID, text: sro2syllabics(input) }, (success) => {
-      if (!success) return;
-
-      ime.clearComposition({ contextID });
-      input = '';
+    ime.setComposition({
+      contextID,
+      text: input,
+      cursor: input.length,
     });
 
-    /* Let another layer handle the spacebar proper.
-     * this usually means inserting a space! */
-    return false;
+    return true;
   }
 
-  /* If we didn't handle it above, it's a normal keystroke. */
-  ime.commitText({ contextID, text: input });
-  ime.clearComposition({ contextID });
-  input = '';
+  // Pressed literally anything other than syllabics. Accept the syllabics input!
+
+  ime.commitText({ contextID, text: sro2syllabics(input) }, (success) => {
+    if (!success) return;
+
+    ime.clearComposition({ contextID });
+    input = '';
+  });
+
+  /* Let another layer handle the spacebar proper.
+   * this usually means inserting a space! */
   return false;
 });
 
@@ -76,9 +84,6 @@ ime.onKeyEvent.addListener((engineID, keyData) => {
  */
 
 // ============================ Constants ============================ \\
-
-const fullStopPattern = /([\u1400-\u167F])[.]|^[.]$/g;
-const SYLLABICS_FULL_STOP = '\u166E'; // ᙮ U+166E CANADIAN SYLLABICS FULL STOP
 
 // Lookup tables:
 const sro2syllabicsLookup = {
@@ -243,17 +248,13 @@ const sroPattern = (function createSROPattern() {
     // sort in order of LONGEST match first!
     .sort((a, b) => b.length - a.length);
 
-  return new RegExp(`^(${parts.join('|')})`);
+  return RegExp(`^(${parts.join('|')})`);
 }());
 
-// A few character translation functions.
 function sro2syllabics(sro) {
   const lookup = sro2syllabicsLookup;
 
-  const transliteration = nfc(sro).replace(wordPattern, transcodeSROWordToSyllabics);
-  // The pattern may yank the last syllabic before the full stop,
-  // so add it back here:
-  return transliteration.replace(fullStopPattern, (_, syllabic) => `${syllabic || ''}${SYLLABICS_FULL_STOP}`);
+  return nfc(sro).replace(wordPattern, transcodeSROWordToSyllabics);
 
   function transcodeSROWordToSyllabics(sroWord) {
     let toTranscribe = sroWord.toLowerCase();
