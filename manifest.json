@@ -12,7 +12,7 @@
             "type": "ime",
             "id": "syllabics",
             "description": "Type nêhiyawêwin syllabics",
-            "language": "cr-CA",
+            "language": "en-CA",
             "layouts": ["us::eng"]
         }
     ],

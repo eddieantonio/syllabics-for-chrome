@@ -2,34 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var ime_api = chrome.input.ime;
+const ime = chrome.input.ime;
 
-var context_id = -1;
+// dunno what this is lol
+let context_id = -1;
 
-console.log("Initializing IME");
-
-ime_api.onFocus.addListener(function(context) {
-  console.log('onFocus:' + context.contextID);
+/**
+ * Occurs when a text input area is focused.
+ *
+ * All we need to do is set the context.
+ */
+ime.onFocus.addListener((context) => {
+  console.log(`onFocus: ${context.contextID}`);
   context_id = context.contextID;
 });
-ime_api.onBlur.addListener(function(contextID) {
+
+/**
+ * When unfcoused, unset the context.
+ */
+ime.onBlur.addListener((contextID) => {
   console.log('onBlur:' + contextID);
   context_id = -1;
 });
 
-ime_api.onActivate.addListener(function(engineID) {
+/**
+ * When the keyboard is activated.
+ */
+ime.onActivate.addListener(function(engineID) {
+  // engine ID will be something like 'syllabics'
   console.log('onActivate:' + engineID);
 });
-ime_api.onDeactivated.addListener(function(engineID) {
+
+/**
+ * When the keyboard is deactivated.
+ */
+ime.onDeactivated.addListener(function(engineID) {
+  // engine ID will be something like 'syllabics'
   console.log('onDeactivated:' + engineID);
 });
 
-ime_api.onKeyEvent.addListener(
-function(engineID, keyData) {
-  console.log('onKeyEvent:' + keyData.key + " context: " + context_id);
-  if (keyData.type == "keydown" && keyData.key.match(/^[a-z]$/)) {
-    chrome.input.ime.commitText({"contextID": context_id,
-                                 "text": keyData.key.toUpperCase()});
+/**
+ * This is the good stuff.
+ *
+ * This can change text based on the key pressed.
+ */
+ime.onKeyEvent.addListener((engineID, keyData) => {
+  console.log(`onKeyEvent: ${keyData.key} context: {context_id}`);
+
+  if (keyData.type == "keydown" && keyData.key.match(/^[eioa]$/)) {
+    chrome.input.ime.commitText({
+      "contextID": context_id,
+      "text": {
+        "e": "\u1401",
+        "i": "\u1403",
+        "o": "\u1405",
+        "a": "\u140a",
+      }[keyData.key],
+    });
     return true;
   }
 
