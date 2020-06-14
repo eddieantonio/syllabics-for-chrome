@@ -2,13 +2,19 @@
     "name": "Syllabics for Chrome",
     "version": "0.0.1",
     "description": "Type nêhiyawêwin syllabics",
-    "permissions": ["storage", "declarativeContent", "activeTab"],
+    "permissions": ["input"],
     "background": {
-        "scripts": ["background.js"],
-        "persistent": false
+        "scripts": ["main.js"]
     },
-    "page_action": {
-        "default_popup": "popup.html"
-    },
+    "input_components": [
+        {
+            "name": "Syllabics IME",
+            "type": "ime",
+            "id": "syllabics",
+            "description": "Type nêhiyawêwin syllabics",
+            "language": "cr-CA",
+            "layouts": ["us::eng"]
+        }
+    ],
     "manifest_version": 2
 }
