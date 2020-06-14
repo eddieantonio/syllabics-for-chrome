@@ -1,0 +1,26 @@
+{
+  "name": "syllabics-for-chrome",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Provides a Cree syllabics IME for ChromeOS",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eddieantonio/syllabics-for-chrome.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eddieantonio/syllabics-for-chrome/issues"
+  },
+  "homepage": "https://github.com/eddieantonio/syllabics-for-chrome#readme",
+  "devDependencies": {
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.21.2"
+  }
+}
