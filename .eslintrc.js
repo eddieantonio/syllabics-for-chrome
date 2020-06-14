@@ -3,6 +3,9 @@ module.exports = {
     browser: true,
     es2020: true,
   },
+  globals: {
+    chrome: true,
+  },
   extends: [
     'airbnb-base',
   ],
