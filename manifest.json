@@ -1,20 +1,25 @@
 {
-    "name": "Syllabics for Chrome",
-    "version": "0.0.1",
-    "description": "Type nêhiyawêwin syllabics",
-    "permissions": ["input"],
-    "background": {
-        "scripts": ["main.js"]
-    },
-    "input_components": [
-        {
-            "name": "ᓀᐦᐃᔭᐍᐏᐣ ᒐᑭᐯᐦᐃᑲᓇ (Syllabics) keyboard",
-            "type": "ime",
-            "id": "crk_syllabics",
-            "description": "Type in Cree syllabics",
-            "language": "en-CA",
-            "layouts": ["us::eng"]
-        }
-    ],
-    "manifest_version": 2
+  "name": "Syllabics for Chrome",
+  "version": "0.0.1",
+  "description": "Type nêhiyawêwin syllabics",
+  "permissions": ["input"],
+  "background": {
+    "scripts": ["main.js"]
+  },
+  "input_components": [
+    {
+      "name": "ᓀᐦᐃᔭᐍᐏᐣ ᒐᑭᐯᐦᐃᑲᓇ (Syllabics) keyboard",
+      "type": "ime",
+      "id": "crk_syllabics",
+      "description": "Type in Cree syllabics",
+      "language": "en-CA",
+      "layouts": ["us::eng"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "manifest_version": 2
 }
