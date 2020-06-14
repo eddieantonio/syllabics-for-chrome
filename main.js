@@ -1,3 +1,4 @@
+// Copyright 2020 National Research Council Canada. MIT licensed.
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -11,36 +12,14 @@ const INVALID_INPUT_CONTEXT = -1;
 let contextID = INVALID_INPUT_CONTEXT;
 
 /**
- * Occurs when a text input area is focused.
- *
- * All we need to do is set the context.
+ * Set the global input context when a text area is focused.
  */
-ime.onFocus.addListener((context) => {
-  contextID = context.contextID;
-});
+ime.onFocus.addListener(context => { contextID = context.contextID });
 
 /**
- * When unfcoused, unset the context.
+ * Unset the global input context when a text area is no longer focused.
  */
-ime.onBlur.addListener((contextID) => {
-  contextID = INVALID_INPUT_CONTEXT;
-});
-
-/**
- * When the keyboard is activated.
- */
-ime.onActivate.addListener(function(engineID) {
-  // engine ID will be something like 'syllabics'
-  console.log('onActivate:' + engineID);
-});
-
-/**
- * When the keyboard is deactivated.
- */
-ime.onDeactivated.addListener(function(engineID) {
-  // engine ID will be something like 'syllabics'
-  console.log('onDeactivated:' + engineID);
-});
+ime.onBlur.addListener(() => { contextID = INVALID_INPUT_CONTEXT });
 
 /**
  * This is the good stuff.
@@ -49,6 +28,7 @@ ime.onDeactivated.addListener(function(engineID) {
  */
 ime.onKeyEvent.addListener((engineID, keyData) => {
   if (keyData.type == "keydown" && keyData.key.match(/^[eioa]$/)) {
+    // TODO: use chrome.input.setComposition?
     chrome.input.ime.commitText({
       "contextID": contextID,
       "text": {
