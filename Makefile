@@ -4,7 +4,12 @@ VERSION := v$(shell sed -n 's/.*"version":.*"\([^"]*\)",*/\1/p' manifest.json)
 ZIPFILE = $(NAME)-$(VERSION).zip
 DIST_FILES = manifest.json main.js $(wildcard icon*.png)
 
+.PHONY: all
 all: $(ZIPFILE)
+
+.PHONY: zip-for-github-actions
+zip-for-github-actions: $(ZIPFILE)
+	@echo "::set-output name=archive::$(ZIPFILE)"
 
 $(ZIPFILE): dist
 	cd $< && zip -r ../$@ .
