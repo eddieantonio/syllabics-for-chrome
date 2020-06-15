@@ -9,15 +9,15 @@ all: $(ZIPFILE)
 
 .PHONY: zip-for-github-actions
 zip-for-github-actions: $(ZIPFILE)
-	@echo "::set-output name=archive::$(ZIPFILE)"
+	@echo "::set-output name=archive::$<"
 
 $(ZIPFILE): dist
 	cd $< && zip -r ../$@ .
 
-.PHONY: dist
 dist: $(DIST_FILES)
 	mkdir -p $@/
 	cp $^ $@/
+	touch $@
 
 .PHONY: clean clean-dist clean-zip
 clean: clean-dist clean-zip
