@@ -1,5 +1,5 @@
 NAME = syllabics-for-chrome
-VERSION := $(shell sed -n 's/.*"version":.*"\([^"]*\)",*/\1/p' manifest.json)
+VERSION := v$(shell sed -n 's/.*"version":.*"\([^"]*\)",*/\1/p' manifest.json)
 
 ZIPFILE = $(NAME)-$(VERSION).zip
 DIST_FILES = manifest.json main.js $(wildcard icon*.png)
