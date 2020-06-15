@@ -8,10 +8,17 @@ const { ime } = chrome.input;
 const INVALID_INPUT_CONTEXT = -1;
 const SYLLABICS_FULL_STOP = '\u166E'; // ᙮ U+166E CANADIAN SYLLABICS FULL STOP
 
-// Match Cree text:
+// Matches a key event we actually care about:
+const keyPattern = /^(?:[a-z !?,]|[.]|-)$/;
+
+// Matches plausibly Cree text:
 const wordPattern = /^(?:[ptkcsmnhwylreioa]|-)+$/i;
 
 // /////////////////////////////// Globals //////////////////////////////// //
+/**
+ * Buffer of KEYSTROKES entered in the composition
+ */
+// TODO: rename this to "rawInput"
 let input = '';
 
 /**
@@ -35,17 +42,47 @@ ime.onBlur.addListener(() => { contextID = INVALID_INPUT_CONTEXT; });
  * This can change text based on the key pressed.
  */
 ime.onKeyEvent.addListener((engineID, keyData) => {
+  // We only react to when the key is pressed DOWN:
   if (keyData.type !== 'keydown') {
     return false;
   }
 
-  if (wordPattern.test(input + keyData.key)) {
-    // looks like syllabic input. Add it!
-    input += keyData.key;
+  // Backspace will delete the input buffer, not composition buffer.
+  if (input && keyData.key === 'Backspace') {
+    input = input.substring(0, input.length - 1);
+    const composition = sro2syllabics(input);
     ime.setComposition({
       contextID,
-      text: sro2syllabics(input),
-      cursor: input.length,
+      text: composition,
+      cursor: composition.length,
+    });
+
+    return true;
+  }
+
+  // TODO: categorize keys between
+  // which are valid in a syllabics composition
+  // which insert non-syllabics text
+  // which DO NOT insert text
+
+  if (!keyPattern.test(keyData.key)) {
+    return false;
+  }
+
+  // Ignore keyboard shortcuts:
+  if (keyData.ctrlKey || keyData.altKey) {
+    return false;
+  }
+
+  // Does it look like valid syllabics?
+  if (wordPattern.test(input + keyData.key)) {
+    // Then add it!
+    input += keyData.key;
+    const composition = sro2syllabics(input);
+    ime.setComposition({
+      contextID,
+      text: composition,
+      cursor: composition.length,
     });
 
     return true;
@@ -53,12 +90,12 @@ ime.onKeyEvent.addListener((engineID, keyData) => {
 
   if (input && keyData.key === '.') {
     // special case for full stop -- only occur AFTER syllabics.
-    input = sro2syllabics(input) + SYLLABICS_FULL_STOP;
+    // commit the current composition, appending the full stop
+    ime.commitText({ contextID, text: sro2syllabics(input) + SYLLABICS_FULL_STOP }, (success) => {
+      if (!success) return;
 
-    ime.setComposition({
-      contextID,
-      text: input,
-      cursor: input.length,
+      ime.clearComposition({ contextID });
+      input = '';
     });
 
     return true;
