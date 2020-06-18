@@ -1,6 +1,6 @@
 {
   "name": "Syllabics for Chrome",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Type nêhiyawêwin syllabics",
   "permissions": ["input"],
   "background": {
@@ -8,11 +8,11 @@
   },
   "input_components": [
     {
-      "name": "ᓀᐦᐃᔭᐍᐏᐣ ᒐᑭᐯᐦᐃᑲᓇ (Syllabics) keyboard",
+      "name": "ᓀᐦᐃᔭᐍᐏᐣ (Cree syllabics) keyboard",
       "type": "ime",
       "id": "crk_syllabics",
       "description": "Type in Cree syllabics",
-      "language": "en-CA",
+      "language": "en",
       "layouts": ["us::eng"]
     }
   ],
